@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FruitScan | Fruit quality from tree to box</title>
+<meta name="description" content="FruitScan measures fruit quality from tree to box: on-tree grade assessment, cold-store bin scanning and packing-line monitoring for apple and pomegranate.">
+<meta property="og:title" content="FruitScan: fruit quality from tree to box">
+<meta property="og:description" content="AI vision that measures size, weight, colour and defects on the tree, in cold storage and on the packing line.">
+<meta property="og:image" content="img/hero-orchard.jpg">
+<link rel="icon" href="img/fruitscan-logo.png">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 80px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: commercial product site — sticky nav, split hero with photo collage, audience cards, alternating product blocks along a tree→bin→box rail, dark comparison band, photo CTA. */
+:root{
+  --bg:#ffffff; --bg-alt:#f3f6f3; --surface:#ffffff; --ink:#102019; --muted:#566660; --line:#dfe6e1;
+  --accent:#b9560f; --accent-ink:#ffffff; --deep:#0f2a1e; --deep-ink:#e9f1ec; --deep-muted:#a9bdb1;
+  --orchard:#4f7f1c; --cold:#2b6a98; --pack:#9a6430;
+  --t-orchard:#eef4e3; --t-cold:#e5eff7; --t-pack:#f5ece2;
+  --shadow:0 18px 50px -20px rgba(16,32,25,.35);
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Figtree","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1612; --bg-alt:#121e18; --surface:#16231c; --ink:#e8f0eb; --muted:#9db0a5; --line:#26362d;
+  --accent:#f29a4f; --accent-ink:#1d0e02; --deep:#08110d; --deep-ink:#e9f1ec; --deep-muted:#93a99c;
+  --orchard:#a3cc5f; --cold:#80b7e6; --pack:#e0ac74;
+  --t-orchard:#18291d; --t-cold:#15232e; --t-pack:#2a2118;
+  --shadow:0 18px 50px -20px rgba(0,0,0,.7); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1612; --bg-alt:#121e18; --surface:#16231c; --ink:#e8f0eb; --muted:#9db0a5; --line:#26362d;
+  --accent:#f29a4f; --accent-ink:#1d0e02; --deep:#08110d; --deep-ink:#e9f1ec; --deep-muted:#93a99c;
+  --orchard:#a3cc5f; --cold:#80b7e6; --pack:#e0ac74;
+  --t-orchard:#18291d; --t-cold:#15232e; --t-pack:#2a2118;
+  --shadow:0 18px 50px -20px rgba(0,0,0,.7); color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6}
+.in{max-width:1180px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);line-height:1.08;text-wrap:balance;margin:0;letter-spacing:-.015em}
+p{margin:0}
+img{display:block;max-width:100%}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.lead{font-size:19px;color:var(--muted);max-width:60ch}
+.btn{display:inline-flex;align-items:center;gap:10px;font-weight:600;font-size:16px;text-decoration:none;border-radius:999px;padding:13px 22px;border:1.5px solid transparent;transition:transform .15s,background .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{border-color:var(--line);background:var(--surface)}
+.btn svg{width:14px;height:14px;fill:currentColor}
+.sec{padding-block:72px}
+.sec.alt{background:var(--bg-alt)}
+.head{display:grid;gap:14px;margin-bottom:36px;max-width:720px}
+.head h2{font-size:clamp(32px,4.4vw,50px)}
+
+/* Nav */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}
+nav.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav.top .in{display:flex;align-items:center;justify-content:space-between;gap:20px;height:68px}
+.logo{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:800;font-size:21px;text-decoration:none}
+.logo img{height:30px;width:auto}
+.byline{display:flex;align-items:center;gap:8px;font-family:var(--body);font-weight:500;font-size:12px;color:var(--muted);padding-left:12px;border-left:1px solid var(--line)}
+.byline img{height:16px;width:auto}
+.vg-badge{display:inline-flex;align-items:center;gap:10px;background:#ffffff;border-radius:10px;padding:8px 12px;justify-self:start;font-size:12px;color:#3b4a40}
+.vg-badge img{height:20px;width:auto}
+.logo small{font-family:var(--body);font-weight:500;font-size:13px;color:var(--muted);margin-left:2px}
+.links{display:flex;gap:26px;font-size:15px;font-weight:500}
+.links a{text-decoration:none;color:var(--muted)} .links a:hover{color:var(--ink)}
+nav.top .btn{padding:10px 18px;font-size:15px}
+
+/* Hero */
+.hero{padding-block:72px 88px;overflow:hidden}
+.hero .in{display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center}
+.hero-copy{display:grid;gap:24px;min-width:0}
+.hero h1{font-size:clamp(42px,5.8vw,74px);font-weight:800}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;color:var(--muted)}
+.chips span{display:inline-flex;align-items:center;gap:7px}
+.chips span::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--orchard)}
+.collage{position:relative;aspect-ratio:1/1.02;max-width:100%}
+.collage .big{position:absolute;inset:0 0 14% 12%;border-radius:28px;overflow:hidden;box-shadow:var(--shadow)}
+.collage .big img,.collage .small img{width:100%;height:100%;object-fit:cover}
+.collage .small{position:absolute;left:0;bottom:0;width:42%;aspect-ratio:4/5;border-radius:999px 999px 24px 24px;overflow:hidden;border:6px solid var(--bg);box-shadow:var(--shadow)}
+.report{position:absolute;right:4%;bottom:4%;width:min(270px,58%);background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow);display:grid;gap:10px}
+.report .rh{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600}
+.report .rh span{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.bar{display:grid;grid-template-columns:52px 1fr 34px;gap:8px;align-items:center;font-size:12px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.bar div{height:8px;border-radius:8px;background:var(--bg-alt);overflow:hidden}
+.bar div i{display:block;height:100%;background:var(--orchard);border-radius:8px}
+.report .note{font-size:11px;color:var(--muted);border-top:1px dashed var(--line);padding-top:8px}
+
+/* Facts */
+.facts{border-block:1px solid var(--line);background:var(--bg-alt)}
+.facts .in{display:grid;grid-template-columns:repeat(4,1fr)}
+.fact{padding:26px 20px;display:grid;gap:4px;border-left:1px solid var(--line)}
+.fact:first-child{border-left:0}
+.fact b{font-family:var(--display);font-size:26px;font-weight:700}
+.fact span{font-size:14px;color:var(--muted)}
+
+/* Audience */
+.aud{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{position:relative;border-radius:22px;overflow:hidden;min-height:400px;display:flex;align-items:flex-end;text-decoration:none;color:#fff;isolation:isolate}
+.card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .5s}
+.card::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(8,17,13,0) 35%,rgba(8,17,13,.86))}
+.card:hover img{transform:scale(1.04)}
+.card .cc{padding:26px;display:grid;gap:8px}
+.card .cc small{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.85}
+.card h3{font-size:28px;color:#fff}
+.card p{font-size:15px;color:rgba(255,255,255,.85)}
+.card .go{font-weight:600;font-size:15px;margin-top:6px}
+
+/* Story */
+.story{display:grid;grid-template-columns:1fr 1.15fr;gap:64px;align-items:start}
+.story .head{margin:0}
+.rail{display:grid;grid-template-columns:repeat(3,1fr);position:relative;margin-top:36px}
+.rail::before{content:"";position:absolute;left:16%;right:16%;top:21px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--orchard),var(--cold),var(--pack))}
+.stop{display:grid;justify-items:center;gap:8px;text-align:center;text-decoration:none;position:relative}
+.stop .dot{width:44px;height:44px;border-radius:50%;background:var(--bg);border:3px solid var(--c);display:grid;place-items:center;font-family:var(--mono);font-size:12px;color:var(--c)}
+.stop b{font-family:var(--display);font-size:17px}
+.stop span{font-size:13px;color:var(--muted)}
+.losses{display:grid;gap:0}
+.loss{display:grid;grid-template-columns:120px 1fr;gap:20px;padding:22px 0;border-bottom:1px solid var(--line)}
+.loss:first-child{border-top:1px solid var(--line)}
+.loss .w{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--c);padding-top:4px}
+.loss h3{font-size:21px;margin-bottom:4px}
+.loss p{color:var(--muted)}
+.story .sum{margin-top:24px;color:var(--muted)} .story .sum strong{color:var(--ink)}
+
+/* Products */
+.prod{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;padding-block:40px}
+.prod+.prod{border-top:1px solid var(--line)}
+.prod.flip .pm{order:2}
+.pm{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:1/1;box-shadow:var(--shadow);max-width:100%;background:#0b130f}
+.pm video{width:100%;height:100%;object-fit:cover;display:block}
+.pm .live{position:absolute;right:18px;top:18px;display:inline-flex;align-items:center;gap:7px;background:rgba(8,17,13,.72);color:#fff;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:8px 12px;border-radius:999px}
+.pm .live::before{content:"";width:7px;height:7px;border-radius:50%;background:#ff4d4d}
+.pm img{width:100%;height:100%;object-fit:cover}
+.pm .badge{position:absolute;left:18px;top:18px;background:var(--surface);color:var(--c);font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:8px 12px;border-radius:999px}
+.pm .inset{position:absolute;right:18px;bottom:18px;width:38%;aspect-ratio:4/5;border-radius:16px;overflow:hidden;border:4px solid var(--surface)}
+.pm .inset img{width:100%;height:100%;object-fit:cover}
+.pc{display:grid;gap:18px;min-width:0}
+.tag{justify-self:start;display:inline-flex;gap:8px;align-items:center;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--c);background:var(--t);padding:7px 12px;border-radius:999px}
+.pc h3{font-size:clamp(28px,3.2vw,38px)}
+.pc .q{font-size:18px;color:var(--muted)}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.steps li{display:grid;grid-template-columns:30px 1fr;gap:12px;padding:12px 14px;border-radius:14px;background:var(--bg-alt)}
+.steps li .n{width:30px;height:30px;border-radius:50%;background:var(--c);color:var(--bg);display:grid;place-items:center;font-family:var(--mono);font-size:12px}
+.steps li b{display:block;font-size:15px}
+.steps li p{font-size:14px;color:var(--muted);line-height:1.45}
+.gets{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.gets li{display:grid;grid-template-columns:22px 1fr;gap:10px;font-size:16px}
+.gets li::before{content:"";width:18px;height:18px;margin-top:3px;border-radius:50%;background:var(--t) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='%23888' stroke-width='2'/%3E%3C/svg%3E") center/12px no-repeat;box-shadow:inset 0 0 0 1.5px var(--c)}
+.spec{display:flex;flex-wrap:wrap;gap:8px}
+.spec span{font-size:13px;border:1px solid var(--line);border-radius:999px;padding:5px 12px}
+.spec span b{color:var(--c);font-weight:600}
+.pc .actions{display:flex;flex-wrap:wrap;gap:12px}
+
+/* Together band */
+.band{background:var(--deep);color:var(--deep-ink)}
+.band .eyebrow{color:#f2a15c}
+.band .lead{color:var(--deep-muted)}
+.band-img{border-radius:24px;overflow:hidden;aspect-ratio:21/8;margin-bottom:48px;max-width:100%}
+.band-img img{width:100%;height:100%;object-fit:cover}
+.tw{overflow-x:auto;border-radius:18px;border:1px solid rgba(255,255,255,.12)}
+table{border-collapse:collapse;width:100%;min-width:720px;font-size:15px}
+th,td{text-align:left;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.1);vertical-align:top}
+thead th{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:500}
+thead th:nth-child(2){color:#8fd59b} thead th:nth-child(3){color:#8fc2ec} thead th:nth-child(4){color:#e9b47c}
+tbody th{color:var(--deep-muted);font-weight:500;width:170px}
+tbody tr:last-child>*{border-bottom:0}
+
+/* Crops */
+.crops{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.crop{border:1px solid var(--line);border-radius:22px;overflow:hidden;background:var(--surface);display:grid;grid-template-rows:auto 1fr}
+.crop .ci{aspect-ratio:16/10;overflow:hidden;background:var(--bg-alt)}
+.crop .ci img{width:100%;height:100%;object-fit:cover}
+.crop .cb{padding:22px;display:grid;gap:12px;align-content:start}
+.crop h3{font-size:24px}
+.crop ul{list-style:none;padding:0;margin:0;display:grid;gap:8px;font-size:15px}
+.crop li{display:flex;justify-content:space-between;gap:12px;padding-bottom:8px;border-bottom:1px dashed var(--line)}
+.crop li:last-child{border-bottom:0}
+.st{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.st.live{color:var(--orchard);background:var(--t-orchard)} .st.next{color:var(--muted);background:var(--bg-alt)}
+.crop p{font-size:14px;color:var(--muted)}
+.crop .others{display:flex;flex-wrap:wrap;gap:8px;padding:22px 22px 0}
+.crop .others span{font-family:var(--display);font-size:20px;font-weight:700;padding:14px 18px;border-radius:16px;background:var(--bg-alt)}
+
+/* FAQ */
+.faqgrid{display:grid;grid-template-columns:.8fr 1.2fr;gap:64px}
+details{border-bottom:1px solid var(--line);padding-block:20px}
+details:first-child{border-top:1px solid var(--line)}
+summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:20px;font-family:var(--display);font-size:20px;font-weight:500}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--mono);font-size:22px;line-height:1;color:var(--accent)}
+details[open] summary::after{content:"−"}
+details p{margin-top:12px;color:var(--muted);max-width:62ch}
+
+/* CTA */
+.cta{position:relative;isolation:isolate;color:#fff;padding-block:120px;overflow:hidden}
+.cta img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.cta::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(8,17,13,.88),rgba(8,17,13,.45))}
+.cta .in{display:grid;gap:22px}
+.cta h2{font-size:clamp(36px,5vw,60px);max-width:16ch;color:#fff}
+.cta p{font-size:19px;max-width:52ch;color:rgba(255,255,255,.86)}
+.pilot{display:flex;flex-wrap:wrap;gap:10px}
+.pilot span{border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:8px 14px;font-size:14px}
+
+/* Footer */
+footer{background:var(--deep);color:var(--deep-muted);padding-block:64px 32px;font-size:14px}
+.fgrid{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:32px}
+footer .logo{color:var(--deep-ink)}
+footer h4{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--deep-ink);margin:0 0 14px;font-weight:500}
+footer ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+footer a{text-decoration:none} footer a:hover{color:var(--deep-ink)}
+.fbot{margin-top:48px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;font-size:13px}
+.credits{font-size:12px;line-height:1.5;max-width:70ch}
+
+.o{--c:var(--orchard);--t:var(--t-orchard)} .c{--c:var(--cold);--t:var(--t-cold)} .p{--c:var(--pack);--t:var(--t-pack)}
+
+/* Responsive */
+@media (max-width:980px){
+  .links{display:none}
+  .hero .in,.story,.prod,.faqgrid{grid-template-columns:1fr;gap:40px}
+  .prod.flip .pm{order:0}
+  .pm{aspect-ratio:4/3}
+  .aud,.crops{grid-template-columns:1fr 1fr}
+  .fgrid{grid-template-columns:1fr 1fr}
+  .facts .in{grid-template-columns:1fr 1fr}
+  .fact:nth-child(3){border-left:0}
+  .fact:nth-child(n+3){border-top:1px solid var(--line)}
+  .band-img{aspect-ratio:16/9}
+}
+@media (max-width:620px){
+  body{font-size:16px}
+  .sec{padding-block:64px}
+  .aud,.crops,.steps,.fgrid{grid-template-columns:1fr}
+  .card{min-height:320px}
+  .loss{grid-template-columns:1fr;gap:4px}
+  .stop span{display:none}
+  .collage{aspect-ratio:1/1.15}
+  .report{width:66%}
+  nav.top .btn{padding:9px 14px;font-size:14px}
+  .byline{display:none}
+}
+@media (prefers-reduced-motion:no-preference){
+  .rail::before{transform-origin:left;animation:draw 1.4s .2s ease-out both}
+  .bar div i{transform-origin:left;animation:grow 1.1s .4s ease-out both}
+  @keyframes draw{from{transform:scaleX(.1)}to{transform:scaleX(1)}}
+  @keyframes grow{from{transform:scaleX(.2)}to{transform:scaleX(1)}}
+}
+
+/* Results */
+.results{display:grid;grid-template-columns:1fr 1.25fr;gap:56px;align-items:center}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:22px;overflow:hidden}
+.stat{background:var(--surface);padding:28px 24px;display:grid;gap:6px;align-content:start}
+.stat b{font-family:var(--display);font-size:clamp(38px,4.6vw,54px);font-weight:800;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
+.stat span{font-size:15px;color:var(--muted)}
+.quote{margin-top:28px;padding:22px 24px;border-left:3px solid var(--orchard);background:var(--bg-alt);border-radius:0 16px 16px 0;display:grid;gap:8px}
+.quote p{font-family:var(--display);font-size:21px;font-weight:500;line-height:1.35}
+.quote small{color:var(--muted);font-size:13px}
+.where{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.where span{font-size:13px;padding:5px 12px;border-radius:999px;background:var(--t-orchard);color:var(--orchard)}
+/* Technology */
+.techgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:36px}
+.tech{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;display:grid;gap:8px;align-content:start}
+.tech .ix{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.tech b{font-family:var(--display);font-size:18px;line-height:1.2}
+.tech p{font-size:14px;color:var(--muted);line-height:1.45}
+.recon{border-radius:22px;background:#fbfaf6;border:1px solid var(--line);padding:24px;overflow-x:auto}
+.recon .lab{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;min-width:640px;margin-bottom:14px}
+.recon .lab span{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#2a4a36;text-align:center}
+.recon img{min-width:640px;width:100%;border-radius:12px}
+@media (max-width:980px){.results{grid-template-columns:1fr;gap:36px}.techgrid{grid-template-columns:1fr 1fr}}
+@media (max-width:620px){.techgrid{grid-template-columns:1fr}.stat{padding:22px 18px}}
+
+/* Contact modal */
+dialog.contact{border:0;padding:0;border-radius:22px;width:min(620px,calc(100vw - 32px));max-height:calc(100dvh - 32px);background:var(--surface);color:var(--ink);box-shadow:0 30px 80px -20px rgba(0,0,0,.5)}
+dialog.contact::backdrop{background:rgba(8,17,13,.62);backdrop-filter:blur(3px)}
+.cm{display:grid;gap:20px;padding:28px}
+.cm-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.cm-head h2{font-size:28px}
+.cm-head p{color:var(--muted);font-size:15px;margin-top:6px}
+.x{flex:none;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--bg-alt);color:var(--ink);font-size:20px;line-height:1;cursor:pointer}
+.tabs{display:flex;gap:6px;background:var(--bg-alt);padding:4px;border-radius:999px;justify-self:start}
+.tabs label{cursor:pointer}
+.tabs input{position:absolute;opacity:0;pointer-events:none}
+.tabs span{display:block;padding:8px 16px;border-radius:999px;font-size:14px;font-weight:600;color:var(--muted)}
+.tabs input:checked+span{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.tabs input:focus-visible+span{outline:2px solid var(--accent)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.f{display:grid;gap:6px;min-width:0}
+.f.full{grid-column:1/-1}
+.f label,.f legend{font-size:13px;font-weight:600}
+.f label i,.f legend i{color:var(--accent);font-style:normal}
+.f input,.f select,.f textarea{font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 13px;width:100%}
+.f textarea{min-height:96px;resize:vertical}
+.f input:focus,.f select:focus,.f textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+.f .err{font-size:12px;color:var(--accent);min-height:0}
+.f[data-bad] input,.f[data-bad] select{border-color:var(--accent)}
+fieldset.f{border:0;margin:0;padding:0}
+.checks{display:flex;flex-wrap:wrap;gap:8px}
+.checks label{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:14px;font-weight:500;cursor:pointer}
+.checks input{accent-color:var(--accent);width:16px;height:16px}
+.cm-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:18px}
+.cm-foot small{color:var(--muted);font-size:13px}
+.cm-foot small b{user-select:all;color:var(--ink)}
+.btn[disabled]{opacity:.6;cursor:default}
+.sent{display:grid;gap:16px}
+.sent h3{font-size:24px}
+.sent p{color:var(--muted)}
+.sent pre{white-space:pre-wrap;font-family:var(--mono);font-size:12.5px;background:var(--bg-alt);border-radius:12px;padding:14px;max-height:200px;overflow:auto;margin:0}
+.sent .row{display:flex;flex-wrap:wrap;gap:10px}
+.addr{font-weight:600;user-select:all}
+.toast{font-size:13px;color:var(--orchard);min-height:1.2em}
+@media (max-width:560px){.grid2{grid-template-columns:1fr}.cm{padding:22px 18px}}
+
+/* Demo video + field metrics */
+.demo{display:grid;gap:10px}
+.demo video{width:100%;aspect-ratio:4/3;border-radius:18px;background:#0b130f;box-shadow:var(--shadow);display:block}
+.demo figcaption{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.demo figcaption::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none}
+.field{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.field div{background:var(--surface);padding:16px;display:grid;gap:4px;align-content:start}
+.field b{font-family:var(--display);font-size:clamp(24px,2.6vw,32px);font-weight:800;line-height:1;color:var(--c);font-variant-numeric:tabular-nums}
+.field span{font-size:13px;color:var(--muted);line-height:1.35}
+.field-note{font-size:13px;color:var(--muted);margin-top:-8px}
+@media (max-width:560px){.field{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="top" aria-label="Main">
+  <div class="in">
+    <a class="logo" href="#top"><img src="img/fruitscan-logo.png" alt="FruitScan" width="131" height="30"></a>
+    <div class="links">
+      <a href="#orchard">Orchard</a><a href="#bins">Cold storage</a><a href="#packing">Packing</a><a href="#technology">Technology</a><a href="#crops">Crops</a><a href="#faq">FAQ</a>
+    </div>
+    <a class="btn primary" href="#pilot" data-contact="pilot">Request a pilot</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="in">
+    <div class="hero-copy">
+      <p class="eyebrow">End-to-end fruit quality</p>
+      <h1>Measure quality from <em>tree to box.</em></h1>
+      <p class="lead">FruitScan uses AI vision to measure size, weight, colour and defects on the tree, in cold storage and on the packing line. You plan, store and pack on measured data, and your buyers get proof.</p>
+      <div class="cta-row">
+        <a class="btn primary" href="#pilot" data-contact="pilot">Request a pilot</a>
+        <a class="btn ghost" href="https://www.youtube.com/watch?v=ukvQ9xS9u4w" target="_blank" rel="noopener"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>Watch the demo</a>
+      </div>
+      <div class="chips"><span>Android phone capture</span><span>Reports in minutes</span><span>Apple and pomegranate</span></div>
+    </div>
+    <div class="collage" aria-hidden="true">
+      <div class="big"><img src="img/hero-orchard.jpg" alt=""></div>
+      <div class="small"><img src="img/pomegranate.jpg" alt=""></div>
+      <div class="report">
+        <div class="rh">Grade-mix report <span>Block 07</span></div>
+        <div class="bar"><span>Large</span><div><i style="width:38%"></i></div><span>38%</span></div>
+        <div class="bar"><span>Medium</span><div><i style="width:44%"></i></div><span>44%</span></div>
+        <div class="bar"><span>Small</span><div><i style="width:18%"></i></div><span>18%</span></div>
+        <p class="note">Sample report, illustrative values</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="facts">
+  <div class="in">
+    <div class="fact"><b>3 checkpoints</b><span>Tree, cold-store bin, packing lane</span></div>
+    <div class="fact"><b>Minutes</b><span>From orchard scan to certified report</span></div>
+    <div class="fact"><b>1 phone</b><span>All the hardware an orchard scan needs</span></div>
+    <div class="fact"><b>Video proof</b><span>Behind every orchard number</span></div>
+  </div>
+</div>
+
+<section class="sec" id="solutions">
+  <div class="in">
+    <div class="head"><p class="eyebrow">Solutions</p><h2>Built for every step your fruit takes</h2><p class="lead">Start with the checkpoint that costs you most today, or connect all three.</p></div>
+    <div class="aud">
+      <a class="card" href="#orchard"><img src="img/apples-tree.jpg" alt="Red apples ripening on the tree"><div class="cc"><small>For growers</small><h3>Orchard Assessment</h3><p>Know your grade mix before harvest and sell on data.</p><span class="go">Explore →</span></div></a>
+      <a class="card" href="#bins"><img src="img/apple-bins.jpg" alt="Wooden bins filled with freshly harvested apples"><div class="cc"><small>For cold storage</small><h3>Bin Scan</h3><p>See weight, colour and defects inside every bin.</p><span class="go">Explore →</span></div></a>
+      <a class="card" href="#packing"><img src="img/conveyor-apples.jpg" alt="Apples moving along a packhouse conveyor"><div class="cc"><small>For packers</small><h3>Package Monitoring</h3><p>Catch boxes packed outside norms, at the lane.</p><span class="go">Explore →</span></div></a>
+    </div>
+  </div>
+</section>
+
+<section class="sec alt" id="why">
+  <div class="in story">
+    <div>
+      <div class="head"><p class="eyebrow">Why end to end</p><h2>Quality is decided in the orchard, at risk in storage and judged at the box.</h2></div>
+      <nav class="rail" aria-label="Checkpoints">
+        <a class="stop o" href="#orchard"><span class="dot">01</span><b>Tree</b><span>Orchard Assessment</span></a>
+        <a class="stop c" href="#bins"><span class="dot">02</span><b>Bin</b><span>Bin Scan</span></a>
+        <a class="stop p" href="#packing"><span class="dot">03</span><b>Box</b><span>Package Monitoring</span></a>
+      </nav>
+    </div>
+    <div>
+      <div class="losses">
+        <div class="loss o"><span class="w">On the tree</span><div><h3>Sold blind</h3><p>Prices and contracts are negotiated on a buyer's eyeball estimate of the crop.</p></div></div>
+        <div class="loss c"><span class="w">In the bin</span><div><h3>Opened blind</h3><p>Chambers are opened without knowing their weight, colour or defect profile.</p></div></div>
+        <div class="loss p"><span class="w">In the box</span><div><h3>Packed blind</h3><p>Boxes that miss the norms are found by the customer and paid for in discounts.</p></div></div>
+      </div>
+      <p class="sum">FruitScan puts a measurement at each of these points. Each checkpoint works on its own, and together they give you <strong>one continuous quality record</strong> from orchard to dispatch.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="products">
+  <div class="in">
+    <div class="head"><p class="eyebrow">Products</p><h2>Three checkpoints, one quality record</h2></div>
+
+    <article class="prod o" id="orchard">
+      <div class="pm"><video src="img/apple-demo.mp4" poster="img/apple-demo-poster.jpg" muted loop playsinline autoplay controls preload="metadata" aria-label="Live demo: FruitScan detecting and tracking each apple on the tree in a commercial apple orchard"></video><span class="badge">01 · On the tree</span><span class="live">Live demo</span></div>
+      <div class="pc">
+        <span class="tag">Orchard Assessment</span>
+        <h3>Grade your crop while it's still on the tree</h3>
+        <p class="q">A guided scan with an Android phone gives you the size, weight and colour mix of the crop before a single fruit is picked.</p>
+        <ol class="steps">
+          <li><span class="n">1</span><div><b>Capture</b><p>Anyone with an Android phone walks the rows and records guided videos.</p></div></li>
+          <li><span class="n">2</span><div><b>Measure</b><p>AI estimates each fruit's size, infers weight and reads colour.</p></div></li>
+          <li><span class="n">3</span><div><b>Grade</b><p>Fruit roll up into size and colour bands per block or farm.</p></div></li>
+          <li><span class="n">4</span><div><b>Report</b><p>A certified grade-mix report with video arrives in minutes.</p></div></li>
+        </ol>
+        <ul class="gets">
+          <li>Pre-sell and negotiate on measured grade data</li>
+          <li>Allocate early to export, retail, wholesale or processing</li>
+          <li>Plan labour, packing material and cold storage to the real mix</li>
+          <li>Give lenders and insurers documented crop value</li>
+        </ul>
+        <div class="spec"><span><b>Hardware</b> Android phone</span><span><b>Optional</b> drone mount</span><span><b>Live on</b> apple, pomegranate</span></div>
+        <div class="field" aria-label="Orchard Assessment in operation">
+          <div><b>1,500+</b><span>Growers who have used it</span></div>
+          <div><b>1,400+ ha</b><span>Orchard area graded on the tree</span></div>
+          <div><b>66</b><span>Net Promoter Score from growers</span></div>
+        </div>
+        <p class="field-note">Field results from commercial orchards in India.</p>
+        <div class="actions"><a class="btn ghost" href="https://www.youtube.com/watch?v=ukvQ9xS9u4w" target="_blank" rel="noopener"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>Watch more demos</a></div>
+      </div>
+    </article>
+
+    <article class="prod c flip" id="bins">
+      <div class="pm"><img src="img/apple-bins.jpg" alt="Wooden bins filled with freshly harvested apples"><span class="badge">02 · In the bin</span></div>
+      <div class="pc">
+        <span class="tag">Bin Scan</span>
+        <h3>Know what's inside every bin in your cold store</h3>
+        <p class="q">A stereo camera scans apple bins as they go into storage, so you know their weight, colour and defects without tipping or hand-checking a single bin.</p>
+        <ol class="steps">
+          <li><span class="n">1</span><div><b>Capture</b><p>An external stereo camera scans bins as they are stored.</p></div></li>
+          <li><span class="n">2</span><div><b>Measure</b><p>Stereo depth gives size and weight; AI reads colour and defects.</p></div></li>
+          <li><span class="n">3</span><div><b>Record</b><p>Every bin gets a profile that rolls up to the chamber.</p></div></li>
+          <li><span class="n">4</span><div><b>Plan</b><p>Decide which chamber to open first, and sell against real stock.</p></div></li>
+        </ol>
+        <ul class="gets">
+          <li>Estimated fruit weight per bin</li>
+          <li>Colour profile of the stored fruit</li>
+          <li>Share of fruit with visible defects</li>
+        </ul>
+        <div class="spec"><span><b>Hardware</b> External stereo camera</span><span><b>Live on</b> apple</span></div>
+        <div class="field" aria-label="Bin Scan in operation">
+          <div><b>17,300+</b><span>Apple bins scanned</span></div>
+          <div><b>65,000+</b><span>Bin scan videos processed</span></div>
+          <div><b>6</b><span>Cold stores and collection centres</span></div>
+        </div>
+        <p class="field-note">In use at cold stores across the Kashmir and Himachal apple belts, India, over the 2025 and 2026 seasons.</p>
+      </div>
+    </article>
+
+    <article class="prod p" id="packing">
+      <div class="pm"><img src="img/packing-people.jpg" alt="Packhouse workers packing apples at a sorting line"><span class="badge">03 · In the box</span></div>
+      <div class="pc">
+        <span class="tag">Package Monitoring</span>
+        <h3>Stop wrongly packed boxes before they ship</h3>
+        <p class="q">An Android phone above each lane of your sorting machine checks the fruit going into every box and alerts you the moment a box breaks your packing norms.</p>
+        <ol class="steps">
+          <li><span class="n">1</span><div><b>Capture</b><p>An Android phone is mounted above each sorter lane.</p></div></li>
+          <li><span class="n">2</span><div><b>Measure</b><p>AI estimates the quality and colour of fruit in each box.</p></div></li>
+          <li><span class="n">3</span><div><b>Check</b><p>Results are compared with the norms set for that box.</p></div></li>
+          <li><span class="n">4</span><div><b>Alert</b><p>A box outside norms raises an alert, fixed before dispatch.</p></div></li>
+        </ol>
+        <ul class="gets">
+          <li>Fewer post-delivery discounts and complaints</li>
+          <li>Buyers consistently get what they ordered</li>
+          <li>Every box checked, not a spot sample</li>
+        </ul>
+        <div class="spec"><span><b>Hardware</b> One Android phone per lane</span><span><b>Checks</b> quality, colour</span><span><b>Live on</b> apple</span></div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="sec alt" id="technology">
+  <div class="in">
+    <div class="head"><p class="eyebrow">Technology</p><h2>How FruitScan sees every fruit</h2><p class="lead">Ordinary video becomes a measured 3D model of the orchard, so each fruit's size and weight come from geometry, not guesswork.</p></div>
+    <div class="recon" role="img" aria-label="An orchard row, the point cloud captured from video, and the reconstructed 3D model with row length, tree spacing and tree height">
+      <div class="lab"><span>1 · Orchard video</span><span>2 · Point cloud</span><span>3 · Reconstructed 3D model</span></div>
+      <img src="img/reconstruction.jpg" alt="">
+    </div>
+    <div class="techgrid">
+      <div class="tech"><span class="ix">Detect</span><b>AI fruit identification</b><p>Every visible fruit is found in the video, frame by frame.</p></div>
+      <div class="tech"><span class="ix">Reconstruct</span><b>Patented 3D reconstruction</b><p>Depth and distance are recovered from video, the way two eyes judge distance.</p></div>
+      <div class="tech"><span class="ix">Calibrate</span><b>Agro-climatic density profiles</b><p>Fruit density models are tuned to the growing region and conditions.</p></div>
+      <div class="tech"><span class="ix">Weigh</span><b>Fruit-by-fruit weight</b><p>Each fruit's weight is calculated individually, in grams.</p></div>
+      <div class="tech"><span class="ix">Grade</span><b>Representative grade mix</b><p>Scans are sampled so the grade mix stands for the whole block.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec band" id="together">
+  <div class="in">
+    <div class="band-img"><img src="img/packhouse.jpg" alt="A modern fruit packhouse with sorting lines"></div>
+    <div class="head"><p class="eyebrow">Connected</p><h2>One record from orchard to dispatch</h2><p class="lead">Check the grade mix forecast on the tree against what goes into storage and what leaves in the box, and see exactly where quality is gained or lost.</p></div>
+    <div class="tw">
+      <table>
+        <thead><tr><th></th><th>On the tree</th><th>In the bin</th><th>In the box</th></tr></thead>
+        <tbody>
+          <tr><th>Question answered</th><td>What grade mix will I harvest?</td><td>What is in my store right now?</td><td>Is this box packed to norms?</td></tr>
+          <tr><th>Measures</th><td>Size, inferred weight, colour</td><td>Size, weight, colour, defects</td><td>Quality, colour</td></tr>
+          <tr><th>Hardware</th><td>Android phone (drone optional)</td><td>External stereo camera</td><td>Android phone per lane</td></tr>
+          <tr><th>Output</th><td>Certified grade-mix report with video, in minutes</td><td>Measured record per bin and chamber</td><td>Real-time violation alerts</td></tr>
+          <tr><th>Decision it drives</th><td>Selling, allocation, harvest planning, finance</td><td>Inventory planning, chamber opening order</td><td>Fix or re-pack before dispatch</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="crops">
+  <div class="in">
+    <div class="head"><p class="eyebrow">Crop types</p><h2>Apple and pomegranate today, more to come</h2></div>
+    <div class="crops">
+      <div class="crop"><div class="ci"><img src="img/harvest-basket.jpg" alt="Freshly picked apples in a basket"></div><div class="cb"><h3>Apple</h3><ul><li>On the tree <span class="st live">Live</span></li><li>In the bin <span class="st live">Live</span></li><li>In the box <span class="st live">Live</span></li></ul><p>The full chain runs on apple, where size and colour grading is standard in trade and export.</p></div></div>
+      <div class="crop"><div class="ci"><img src="img/pomegranate.jpg" alt="Pomegranate on the tree"></div><div class="cb"><h3>Pomegranate</h3><ul><li>On the tree <span class="st live">Live</span></li><li>In the bin <span class="st next">Extendable</span></li><li>In the box <span class="st next">Extendable</span></li></ul><p>High value per fruit, with price driven heavily by size grade.</p></div></div>
+      <div class="crop"><div class="others"><span>Citrus</span><span>Mango</span><span>Stone fruit</span><span>Avocado</span></div><div class="cb"><h3>Your crop next</h3><p>Any fruit graded mainly on size and colour fits the method. Each new crop gets its own model training and grade bands before launch.</p><a class="btn ghost" href="#pilot" data-contact="contact" style="justify-self:start">Talk to us</a></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec alt" id="faq">
+  <div class="in faqgrid">
+    <div class="head"><p class="eyebrow">FAQ</p><h2>Questions we often hear</h2></div>
+    <div>
+      <details><summary>My team already checks quality by hand.</summary><p>Hand checks cover a small sample and depend on who does them. FruitScan measures far more fruit, the same way every time, and keeps the evidence.</p></details>
+      <details><summary>Do I need to buy equipment?</summary><p>On the tree and on the packing line you only need Android phones. Bin Scan uses an external stereo camera.</p></details>
+      <details><summary>Will my buyers accept the results?</summary><p>Orchard reports come with the video each number was measured from, so a buyer can check the work instead of taking it on trust.</p></details>
+      <details><summary>Can the orchard scan run on drones?</summary><p>Yes, the capture setup can be mounted on drones if required. A phone scan is the simpler default: no permits or pilots, and it gets close enough to measure true size.</p></details>
+      <details><summary>Does it work on my crop or variety?</summary><p>Apple runs across all three checkpoints and pomegranate on the tree. New varieties and crops are calibrated before launch.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="cta" id="pilot">
+  <img src="img/orchard-row.jpg" alt="">
+  <div class="in">
+    <p class="eyebrow" style="color:#f6b27a">Start a pilot</p>
+    <h2>See FruitScan on your own fruit</h2>
+    <p>Pick one checkpoint and compare our measurements with your own records. Tell us about your operation and our team will get back to you to set it up.</p>
+    <div class="pilot"><span>One orchard block</span><span>One cold-store chamber</span><span>One packing lane</span></div>
+    <div class="cta-row"><a class="btn primary" href="#pilot" data-contact="pilot">Request a pilot</a><a class="btn ghost" href="#pilot" data-contact="contact" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.5)">Contact us</a></div>
+  </div>
+</section>
+
+<footer>
+  <div class="in">
+    <div class="fgrid">
+      <div style="display:grid;gap:14px;align-content:start"><a class="logo" href="#top" style="background:#ffffff;border-radius:12px;padding:10px 14px;justify-self:start"><img src="img/fruitscan-logo.png" alt="FruitScan" width="131" height="30"></a><p>End-to-end fruit quality, built and operated by Vegrow, a B2B fruit marketplace in India.</p><span class="vg-badge">A product of <img src="img/vegrow-logo.svg" alt="Vegrow" width="91" height="20"></span></div>
+      <div><h4>Products</h4><ul><li><a href="#orchard">Orchard Assessment</a></li><li><a href="#bins">Bin Scan</a></li><li><a href="#packing">Package Monitoring</a></li></ul></div>
+      <div><h4>Solutions</h4><ul><li><a href="#orchard">Growers</a></li><li><a href="#bins">Cold storage</a></li><li><a href="#packing">Packers</a></li></ul></div>
+      <div><h4>Contact</h4><ul><li><a href="#pilot" data-contact="pilot">Request a pilot</a></li><li><a href="#pilot" data-contact="contact">Contact us</a></li><li><span style="user-select:all">contact@vegrow.in</span></li></ul></div>
+      <div><h4>Resources</h4><ul><li><a href="#technology">Technology</a></li><li><a href="#crops">Crop types</a></li><li><a href="#faq">FAQ</a></li><li><a href="https://www.youtube.com/watch?v=ukvQ9xS9u4w" target="_blank" rel="noopener">Demo video</a></li></ul></div>
+    </div>
+    <div class="fbot">
+      <span>© 2026 Vegrow</span>
+    </div>
+  </div>
+</footer>
+
+<dialog class="contact" id="contact" aria-labelledby="cm-title">
+  <div class="cm" id="cm-form-view">
+    <div class="cm-head">
+      <div><h2 id="cm-title">Request a pilot</h2><p id="cm-sub">Tell us about your operation and we'll get back to you.</p></div>
+      <button class="x" type="button" data-close aria-label="Close">×</button>
+    </div>
+    <div class="tabs" role="radiogroup" aria-label="Enquiry type">
+      <label><input type="radio" name="kind" id="kind-pilot" value="pilot" checked><span>Request a pilot</span></label>
+      <label><input type="radio" name="kind" id="kind-contact" value="contact"><span>General enquiry</span></label>
+    </div>
+    <form id="cm-form" novalidate>
+      <div class="grid2">
+        <div class="f"><label for="cf-name">Full name <i>*</i></label><input id="cf-name" name="name" autocomplete="name" required><span class="err"></span></div>
+        <div class="f"><label for="cf-company">Company <i>*</i></label><input id="cf-company" name="company" autocomplete="organization" required><span class="err"></span></div>
+        <div class="f"><label for="cf-email">Work email <i>*</i></label><input id="cf-email" name="email" type="email" autocomplete="email" required><span class="err"></span></div>
+        <div class="f"><label for="cf-phone">Phone / WhatsApp</label><input id="cf-phone" name="phone" type="tel" autocomplete="tel"><span class="err"></span></div>
+        <div class="f"><label for="cf-country">Country <i>*</i></label><input id="cf-country" name="country" autocomplete="country-name" required><span class="err"></span></div>
+        <div class="f"><label for="cf-role">You are a</label><select id="cf-role" name="role"><option value="">Select</option><option>Grower</option><option>Cold storage operator</option><option>Packer / packhouse</option><option>Exporter / trader</option><option>Cooperative</option><option>Other</option></select><span class="err"></span></div>
+        <fieldset class="f full pilot-only"><legend>Interested in</legend><div class="checks">
+          <label><input type="checkbox" id="cf-p1" name="products" value="Orchard Assessment">Orchard Assessment</label>
+          <label><input type="checkbox" id="cf-p2" name="products" value="Bin Scan">Bin Scan</label>
+          <label><input type="checkbox" id="cf-p3" name="products" value="Package Monitoring">Package Monitoring</label>
+        </div></fieldset>
+        <div class="f pilot-only"><label for="cf-crop">Crop</label><select id="cf-crop" name="crop"><option value="">Select</option><option>Apple</option><option>Pomegranate</option><option>Both</option><option>Other</option></select></div>
+        <div class="f pilot-only"><label for="cf-scale">Scale</label><input id="cf-scale" name="scale" placeholder="e.g. 120 ha, 3 chambers, 4 lanes"></div>
+        <div class="f full"><label for="cf-msg" id="cf-msg-label">Anything else we should know?</label><textarea id="cf-msg" name="message"></textarea><span class="err"></span></div>
+      </div>
+      <div class="cm-foot" style="margin-top:20px;justify-content:flex-end">
+        <button class="btn primary" type="submit">Send enquiry</button>
+      </div>
+    </form>
+  </div>
+  <div class="cm" id="cm-ok-view" hidden>
+    <div class="cm-head"><div><h2>Thank you</h2><p>Your enquiry has reached our team. We'll get back to you shortly.</p></div><button class="x" type="button" data-close aria-label="Close">×</button></div>
+    <div class="sent"><div class="row"><button class="btn primary" type="button" data-close>Close</button></div></div>
+  </div>
+  <div class="cm" id="cm-done-view" hidden>
+    <div class="cm-head"><div><h2>Almost done</h2><p>Your email app should open with your enquiry ready to send.</p></div><button class="x" type="button" data-close aria-label="Close">×</button></div>
+    <div class="sent">
+      <p>Press <strong>Send</strong> in your email app to reach us. If it didn't open, copy your enquiry and email it to <span class="addr">contact@vegrow.in</span>.</p>
+      <pre id="cm-preview"></pre>
+      <div class="row">
+        <a class="btn primary" id="cm-mailto" href="mailto:contact@vegrow.in">Open email again</a>
+        <button class="btn ghost" type="button" id="cm-copy">Copy enquiry</button>
+        <button class="btn ghost" type="button" id="cm-back">Edit details</button>
+      </div>
+      <p class="toast" id="cm-toast" aria-live="polite"></p>
+    </div>
+  </div>
+</dialog>
+<script>
+(function(){
+  const TO='contact@vegrow.in';
+  // Formspree form ID (the part after formspree.io/f/). Leave empty to use the visitor's email app.
+  const FORMSPREE_ID='';
+  const dlg=document.getElementById('contact'), form=document.getElementById('cm-form');
+  const formView=document.getElementById('cm-form-view'), doneView=document.getElementById('cm-done-view'), okView=document.getElementById('cm-ok-view');
+  const title=document.getElementById('cm-title'), sub=document.getElementById('cm-sub'), msgLabel=document.getElementById('cf-msg-label');
+  let lastText='', lastHref='';
+  function setKind(k){
+    document.getElementById(k==='contact'?'kind-contact':'kind-pilot').checked=true;
+    const pilot=k!=='contact';
+    title.textContent=pilot?'Request a pilot':'Contact us';
+    sub.textContent=pilot?'Tell us about your operation and we’ll get back to you to set up a pilot.':'Send us a question and our team will get back to you.';
+    msgLabel.innerHTML=pilot?'Anything else we should know?':'Your message <i>*</i>';
+    document.getElementById('cf-msg').required=!pilot;
+    form.querySelectorAll('.pilot-only').forEach(el=>el.hidden=!pilot);
+  }
+  function open(k){
+    setKind(k||'pilot'); formView.hidden=false; doneView.hidden=true; okView.hidden=true;
+    if(typeof dlg.showModal==='function'){ if(!dlg.open) dlg.showModal(); } else { dlg.setAttribute('open',''); }
+    setTimeout(()=>document.getElementById('cf-name').focus(),30);
+  }
+  function close(){ if(dlg.open) dlg.close(); else dlg.removeAttribute('open'); }
+  document.addEventListener('click',e=>{
+    const t=e.target.closest('[data-contact]'); if(t){ e.preventDefault(); open(t.dataset.contact); return; }
+    if(e.target.closest('[data-close]')) close();
+  });
+  dlg.addEventListener('click',e=>{ if(e.target===dlg) close(); });
+  document.querySelectorAll('input[name="kind"]').forEach(r=>r.addEventListener('change',()=>setKind(r.value)));
+  function v(id){ return document.getElementById(id).value.trim(); }
+  function mark(id,msg){ const f=document.getElementById(id).closest('.f'); const e=f.querySelector('.err'); if(msg){ f.dataset.bad=''; if(e) e.textContent=msg; } else { delete f.dataset.bad; if(e) e.textContent=''; } return !msg; }
+  function validate(){
+    const pilot=document.getElementById('kind-pilot').checked; let ok=true, first=null;
+    const checks=[['cf-name',v('cf-name')?'':'Enter your name'],['cf-company',v('cf-company')?'':'Enter your company'],
+      ['cf-email',!v('cf-email')?'Enter your email':(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('cf-email'))?'':'Check the email address')],
+      ['cf-country',v('cf-country')?'':'Enter your country'],['cf-msg',(!pilot&&!v('cf-msg'))?'Write your message':'']];
+    checks.forEach(([id,m])=>{ if(!mark(id,m)){ ok=false; first=first||id; } });
+    if(first) document.getElementById(first).focus();
+    return ok;
+  }
+  form.addEventListener('submit',e=>{
+    e.preventDefault(); if(!validate()) return;
+    const pilot=document.getElementById('kind-pilot').checked;
+    const prods=[...form.querySelectorAll('input[name="products"]:checked')].map(x=>x.value);
+    const lines=[
+      (pilot?'FruitScan pilot request':'FruitScan enquiry'),'',
+      'Name: '+v('cf-name'),'Company: '+v('cf-company'),'Email: '+v('cf-email'),
+      v('cf-phone')?'Phone / WhatsApp: '+v('cf-phone'):null,'Country: '+v('cf-country'),
+      v('cf-role')?'Role: '+v('cf-role'):null,
+      pilot&&prods.length?'Interested in: '+prods.join(', '):null,
+      pilot&&v('cf-crop')?'Crop: '+v('cf-crop'):null,
+      pilot&&v('cf-scale')?'Scale: '+v('cf-scale'):null,
+      v('cf-msg')?'':null, v('cf-msg')?(pilot?'Notes: ':'Message: ')+v('cf-msg'):null
+    ].filter(x=>x!==null);
+    lastText=lines.join('\n');
+    const subject=(pilot?'Pilot request':'Enquiry')+' – '+v('cf-company')+' ('+v('cf-country')+')';
+    lastHref='mailto:'+TO+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(lastText);
+    document.getElementById('cm-preview').textContent='To: '+TO+'\nSubject: '+subject+'\n\n'+lastText;
+    document.getElementById('cm-mailto').href=lastHref;
+    document.getElementById('cm-toast').textContent='';
+    const viaEmailApp=()=>{ formView.hidden=true; doneView.hidden=false;
+      const a=document.createElement('a'); a.href=lastHref; a.rel='noopener'; document.body.appendChild(a); a.click(); a.remove(); };
+    if(!FORMSPREE_ID){ viaEmailApp(); return; }
+    const btn=form.querySelector('button[type="submit"]'); btn.disabled=true; btn.textContent='Sending\u2026';
+    const payload={_subject:subject,_replyto:v('cf-email'),enquiry:pilot?'Pilot request':'General enquiry',name:v('cf-name'),company:v('cf-company'),email:v('cf-email'),phone:v('cf-phone'),country:v('cf-country'),role:v('cf-role'),products:prods.join(', '),crop:v('cf-crop'),scale:v('cf-scale'),message:v('cf-msg')};
+    fetch('https://formspree.io/f/'+FORMSPREE_ID,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(payload)})
+      .then(r=>{ if(!r.ok) throw new Error('send failed'); formView.hidden=true; okView.hidden=false; form.reset(); setKind(pilot?'pilot':'contact'); })
+      .catch(viaEmailApp)
+      .finally(()=>{ btn.disabled=false; btn.textContent='Send enquiry'; });
+  });
+  document.getElementById('cm-back').addEventListener('click',()=>{ doneView.hidden=true; formView.hidden=false; });
+  document.getElementById('cm-copy').addEventListener('click',()=>{
+    const txt=document.getElementById('cm-preview').textContent, toast=document.getElementById('cm-toast');
+    const sel=()=>{ const r=document.createRange(); r.selectNodeContents(document.getElementById('cm-preview')); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast.textContent='Selected. Press Ctrl+C or ⌘C to copy.'; };
+    try{ navigator.clipboard.writeText(txt).then(()=>toast.textContent='Copied. Paste it into an email to contact@vegrow.in.',sel); }catch(_){ sel(); }
+  });
+})();
+</script>
+</body>
+</html>
