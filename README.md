@@ -2,7 +2,7 @@
 
 Public website for FruitScan by Vegrow: Orchard Assessment, Bin Scan and Package Monitoring.
 
-Published with GitHub Pages from the `main` branch: https://vegrow-tech.github.io/fruitscan-site/
+Live at https://fruitscan.vegrow.in (GitHub Pages, deployed by the workflow in `.github/workflows/pages.yml` on every push to `main`).
 
 ## Editing
 
