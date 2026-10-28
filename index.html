@@ -609,24 +609,25 @@ fieldset.f{border:0;margin:0;padding:0}
         <div class="f pilot-only"><label for="cf-scale">Scale</label><input id="cf-scale" name="scale" placeholder="e.g. 120 ha, 3 chambers, 4 lanes"></div>
         <div class="f full"><label for="cf-msg" id="cf-msg-label">Anything else we should know?</label><textarea id="cf-msg" name="message"></textarea><span class="err"></span></div>
       </div>
+      <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden"><label for="cf-website">Leave this empty</label><input id="cf-website" name="website" tabindex="-1" autocomplete="off"></div>
+      <p class="toast" id="cm-err" role="alert" style="color:var(--accent);margin-top:16px" hidden></p>
       <div class="cm-foot" style="margin-top:20px;justify-content:flex-end">
         <button class="btn primary" type="submit">Send enquiry</button>
       </div>
     </form>
   </div>
   <div class="cm" id="cm-ok-view" hidden>
-    <div class="cm-head"><div><h2>Thank you</h2><p>Your enquiry has reached our team. We'll get back to you shortly.</p></div><button class="x" type="button" data-close aria-label="Close">×</button></div>
+    <div class="cm-head"><div><h2>Thank you</h2><p id="cm-ok-text">Your enquiry has reached our team. We'll get back to you shortly.</p></div><button class="x" type="button" data-close aria-label="Close">×</button></div>
     <div class="sent"><div class="row"><button class="btn primary" type="button" data-close>Close</button></div></div>
   </div>
   <div class="cm" id="cm-done-view" hidden>
-    <div class="cm-head"><div><h2>Almost done</h2><p>Your email app should open with your enquiry ready to send.</p></div><button class="x" type="button" data-close aria-label="Close">×</button></div>
+    <div class="cm-head"><div><h2>We couldn't send that</h2><p>Your details are still here. Try again in a moment, or email them to us.</p></div><button class="x" type="button" data-close aria-label="Close">×</button></div>
     <div class="sent">
-      <p>Press <strong>Send</strong> in your email app to reach us. If it didn't open, copy your enquiry and email it to <span class="addr">contact@vegrow.in</span>.</p>
+      <p>Our address is <span class="addr">contact@vegrow.in</span>.</p>
       <pre id="cm-preview"></pre>
       <div class="row">
-        <a class="btn primary" id="cm-mailto" href="mailto:contact@vegrow.in">Open email again</a>
+        <button class="btn primary" type="button" id="cm-retry">Try again</button>
         <button class="btn ghost" type="button" id="cm-copy">Copy enquiry</button>
-        <button class="btn ghost" type="button" id="cm-back">Edit details</button>
       </div>
       <p class="toast" id="cm-toast" aria-live="polite"></p>
     </div>
@@ -635,12 +636,13 @@ fieldset.f{border:0;margin:0;padding:0}
 <script>
 (function(){
   const TO='contact@vegrow.in';
-  // Formspree form ID (the part after formspree.io/f/). Leave empty to use the visitor's email app.
-  const FORMSPREE_ID='';
+  // Google Apps Script web app URL that emails each enquiry to contact@vegrow.in (see backend/README.md).
+  const ENDPOINT='';
   const dlg=document.getElementById('contact'), form=document.getElementById('cm-form');
   const formView=document.getElementById('cm-form-view'), doneView=document.getElementById('cm-done-view'), okView=document.getElementById('cm-ok-view');
+  const errEl=document.getElementById('cm-err'), btn=form.querySelector('button[type="submit"]');
   const title=document.getElementById('cm-title'), sub=document.getElementById('cm-sub'), msgLabel=document.getElementById('cf-msg-label');
-  let lastText='', lastHref='';
+  let lastText='', lastPayload=null;
   function setKind(k){
     document.getElementById(k==='contact'?'kind-contact':'kind-pilot').checked=true;
     const pilot=k!=='contact';
@@ -651,7 +653,7 @@ fieldset.f{border:0;margin:0;padding:0}
     form.querySelectorAll('.pilot-only').forEach(el=>el.hidden=!pilot);
   }
   function open(k){
-    setKind(k||'pilot'); formView.hidden=false; doneView.hidden=true; okView.hidden=true;
+    setKind(k||'pilot'); formView.hidden=false; doneView.hidden=true; okView.hidden=true; errEl.hidden=true;
     if(typeof dlg.showModal==='function'){ if(!dlg.open) dlg.showModal(); } else { dlg.setAttribute('open',''); }
     setTimeout(()=>document.getElementById('cf-name').focus(),30);
   }
@@ -689,21 +691,24 @@ fieldset.f{border:0;margin:0;padding:0}
     ].filter(x=>x!==null);
     lastText=lines.join('\n');
     const subject=(pilot?'Pilot request':'Enquiry')+' – '+v('cf-company')+' ('+v('cf-country')+')';
-    lastHref='mailto:'+TO+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(lastText);
-    document.getElementById('cm-preview').textContent='To: '+TO+'\nSubject: '+subject+'\n\n'+lastText;
-    document.getElementById('cm-mailto').href=lastHref;
+    document.getElementById('cm-preview').textContent='Subject: '+subject+'\n\n'+lastText;
     document.getElementById('cm-toast').textContent='';
-    const viaEmailApp=()=>{ formView.hidden=true; doneView.hidden=false;
-      const a=document.createElement('a'); a.href=lastHref; a.rel='noopener'; document.body.appendChild(a); a.click(); a.remove(); };
-    if(!FORMSPREE_ID){ viaEmailApp(); return; }
-    const btn=form.querySelector('button[type="submit"]'); btn.disabled=true; btn.textContent='Sending\u2026';
-    const payload={_subject:subject,_replyto:v('cf-email'),enquiry:pilot?'Pilot request':'General enquiry',name:v('cf-name'),company:v('cf-company'),email:v('cf-email'),phone:v('cf-phone'),country:v('cf-country'),role:v('cf-role'),products:prods.join(', '),crop:v('cf-crop'),scale:v('cf-scale'),message:v('cf-msg')};
-    fetch('https://formspree.io/f/'+FORMSPREE_ID,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(payload)})
-      .then(r=>{ if(!r.ok) throw new Error('send failed'); formView.hidden=true; okView.hidden=false; form.reset(); setKind(pilot?'pilot':'contact'); })
-      .catch(viaEmailApp)
-      .finally(()=>{ btn.disabled=false; btn.textContent='Send enquiry'; });
+    lastPayload={subject:subject,enquiry:pilot?'Pilot request':'General enquiry',name:v('cf-name'),company:v('cf-company'),email:v('cf-email'),phone:v('cf-phone'),country:v('cf-country'),role:v('cf-role'),products:pilot?prods.join(', '):'',crop:pilot?v('cf-crop'):'',scale:pilot?v('cf-scale'):'',message:v('cf-msg'),website:v('cf-website'),page:location.href};
+    send(pilot);
   });
-  document.getElementById('cm-back').addEventListener('click',()=>{ doneView.hidden=true; formView.hidden=false; });
+  function send(pilot){
+    errEl.hidden=true; btn.disabled=true; btn.textContent='Sending\u2026';
+    const fail=()=>{ formView.hidden=true; doneView.hidden=false; };
+    if(!ENDPOINT){ btn.disabled=false; btn.textContent='Send enquiry'; fail(); return; }
+    fetch(ENDPOINT,{method:'POST',body:JSON.stringify(lastPayload)})
+      .then(r=>r.json())
+      .then(d=>{ if(!d||!d.ok) throw new Error((d&&d.error)||'send failed');
+        document.getElementById('cm-ok-text').textContent=(pilot?'Your pilot request':'Your enquiry')+' has reached our team. We\u2019ll reply to '+lastPayload.email+' shortly.';
+        formView.hidden=true; doneView.hidden=true; okView.hidden=false; form.reset(); setKind(pilot?'pilot':'contact'); })
+      .catch(fail)
+      .finally(()=>{ btn.disabled=false; btn.textContent='Send enquiry'; });
+  }
+  document.getElementById('cm-retry').addEventListener('click',()=>{ doneView.hidden=true; formView.hidden=false; send(document.getElementById('kind-pilot').checked); });
   document.getElementById('cm-copy').addEventListener('click',()=>{
     const txt=document.getElementById('cm-preview').textContent, toast=document.getElementById('cm-toast');
     const sel=()=>{ const r=document.createRange(); r.selectNodeContents(document.getElementById('cm-preview')); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast.textContent='Selected. Press Ctrl+C or ⌘C to copy.'; };
