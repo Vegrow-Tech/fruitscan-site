@@ -333,6 +333,15 @@ fieldset.f{border:0;margin:0;padding:0}
 .field span{font-size:13px;color:var(--muted);line-height:1.35}
 .field-note{font-size:13px;color:var(--muted);margin-top:-8px}
 @media (max-width:560px){.field{grid-template-columns:1fr}}
+
+.report-card{display:grid;grid-template-columns:40px 1fr auto;gap:14px;align-items:center;text-decoration:none;border:1px solid var(--line);border-radius:16px;padding:14px 16px;background:var(--surface);transition:border-color .15s,transform .15s}
+.report-card:hover{border-color:var(--c);transform:translateY(-1px)}
+.rc-ico{width:40px;height:40px;border-radius:12px;background:var(--t);color:var(--c);display:grid;place-items:center}
+.rc-ico svg{width:22px;height:22px}
+.rc-txt{display:grid;gap:2px;min-width:0}
+.rc-txt b{font-size:16px}
+.rc-txt small{font-size:13px;color:var(--muted)}
+.rc-go{font-size:20px;color:var(--c)}
 </style>
 </head>
 <body>
@@ -470,6 +479,11 @@ fieldset.f{border:0;margin:0;padding:0}
           <div><b>6</b><span>Cold stores and collection centres</span></div>
         </div>
         <p class="field-note">In use at cold stores across the Kashmir and Himachal apple belts, India, over the 2025 and 2026 seasons.</p>
+        <a class="report-card" href="bin-scan-sample-report.html">
+          <span class="rc-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9 17v-3M12 17v-6M15 17v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+          <span class="rc-txt"><b>See a sample Bin Scan report</b><small>Size, colour and defects for one cold-store chamber, bin by bin</small></span>
+          <span class="rc-go" aria-hidden="true">→</span>
+        </a>
       </div>
     </article>
 
