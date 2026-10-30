@@ -334,14 +334,42 @@ fieldset.f{border:0;margin:0;padding:0}
 .field-note{font-size:13px;color:var(--muted);margin-top:-8px}
 @media (max-width:560px){.field{grid-template-columns:1fr}}
 
-.report-card{display:grid;grid-template-columns:40px 1fr auto;gap:14px;align-items:center;text-decoration:none;border:1px solid var(--line);border-radius:16px;padding:14px 16px;background:var(--surface);transition:border-color .15s,transform .15s}
-.report-card:hover{border-color:var(--c);transform:translateY(-1px)}
-.rc-ico{width:40px;height:40px;border-radius:12px;background:var(--t);color:var(--c);display:grid;place-items:center}
-.rc-ico svg{width:22px;height:22px}
-.rc-txt{display:grid;gap:2px;min-width:0}
-.rc-txt b{font-size:16px}
-.rc-txt small{font-size:13px;color:var(--muted)}
-.rc-go{font-size:20px;color:var(--c)}
+
+/* Bin Scan carousel */
+.carousel .cr-track{display:flex;width:100%;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none}
+.carousel .cr-track::-webkit-scrollbar{display:none}
+.cr-slide{flex:0 0 100%;height:100%;margin:0;position:relative;scroll-snap-align:start;overflow:hidden}
+.cr-slide>img,.cr-slide>video{width:100%;height:100%;object-fit:cover;display:block}
+.cr-slide .dim{filter:blur(3px) brightness(.55);transform:scale(1.06)}
+.snap{position:absolute;left:8%;right:8%;top:50%;transform:translateY(-50%);background:#ffffff;color:#102019;border-radius:18px;padding:22px;display:grid;gap:12px;box-shadow:0 20px 50px -20px rgba(0,0,0,.6)}
+.snap .sl{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#2b6a98}
+.snap h4{font-family:var(--display);font-size:clamp(18px,2.1vw,24px);line-height:1.15;margin:0}
+.snap .sn{font-size:12.5px;color:#566660}
+.vbars{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.vb{display:grid;gap:6px;text-align:center;min-width:0}
+.vb .col{height:130px;display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;gap:4px}
+.vb b{font-size:11.5px;font-variant-numeric:tabular-nums}
+.vb i{display:block;background:#2b6a98;border-radius:6px 6px 2px 2px;min-height:4px}
+.vb small{font-size:11px;color:#566660;white-space:nowrap}
+.cstack{display:flex;height:28px;border-radius:8px;overflow:hidden;gap:2px}
+.cstack i{display:block;height:100%}
+.cleg,.dlist{list-style:none;margin:0;padding:0;display:grid;gap:7px;font-size:13.5px}
+.cleg li{display:grid;grid-template-columns:12px 1fr auto;gap:9px;align-items:center}
+.cleg span{width:12px;height:12px;border-radius:3px}
+.cleg b,.dlist b{font-variant-numeric:tabular-nums}
+.dlist li{display:grid;grid-template-columns:96px 1fr 44px;gap:10px;align-items:center}
+.dlist span{height:9px;border-radius:5px;background:#eef3ef;overflow:hidden}
+.dlist i{display:block;height:100%;background:#b3261e;border-radius:5px}
+.dlist b{text-align:right}
+.cr-tag{position:absolute;right:18px;top:18px;background:rgba(8,17,13,.72);color:#fff;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:8px 12px;border-radius:999px}
+.cr-ctrl{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:rgba(8,17,13,.62);border-radius:999px;padding:5px 6px;backdrop-filter:blur(6px)}
+.cr-btn{width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:20px;line-height:1;cursor:pointer;display:grid;place-items:center}
+.cr-btn:hover{background:rgba(255,255,255,.3)}
+.cr-dots{display:flex;gap:6px}
+.cr-dots button{width:8px;height:8px;border-radius:50%;border:0;padding:0;background:rgba(255,255,255,.4);cursor:pointer}
+.cr-dots button[aria-current="true"]{background:#fff;width:20px;border-radius:4px}
+@media (max-width:620px){.pm.carousel{aspect-ratio:4/5}.snap{left:5%;right:5%;top:58px;bottom:62px;transform:none;padding:16px;gap:9px;align-content:center}.snap .sn{display:none}.cr-tag{display:none}.vbars{gap:5px}.vb .col{height:96px}.vb small{font-size:9.5px}.dlist li{grid-template-columns:80px 1fr 40px}}
+@media (prefers-reduced-motion:reduce){.carousel .cr-track{scroll-behavior:auto}}
 </style>
 </head>
 <body>
@@ -456,7 +484,28 @@ fieldset.f{border:0;margin:0;padding:0}
     </article>
 
     <article class="prod c flip" id="bins">
-      <div class="pm"><img src="img/apple-bins.jpg" alt="Wooden bins filled with freshly harvested apples"><span class="badge">02 · In the bin</span></div>
+      <div class="pm carousel" aria-roledescription="carousel" aria-label="Bin Scan in pictures">
+        <div class="cr-track" tabindex="0">
+          <figure class="cr-slide" aria-label="1 of 4"><img src="img/apple-bins.jpg" alt="Wooden bins filled with freshly harvested apples"></figure>
+          <figure class="cr-slide" aria-label="2 of 4"><img src="img/apple-bins.jpg" alt="" class="dim">
+            <div class="snap"><p class="sl">Size</p><h4>66% of fruit is 70 mm or larger</h4>
+              <div class="vbars" role="img" aria-label="Share of fruit by diameter: under 60 mm 4%, 60 to 65 mm 9%, 65 to 70 mm 21%, 70 to 75 mm 31%, 75 to 80 mm 23%, 80 mm and over 12%"><span class="vb"><span class="col"><b>4%</b><i style="height:11%"></i></span><small>&lt;60</small></span><span class="vb"><span class="col"><b>9%</b><i style="height:24%"></i></span><small>60–65</small></span><span class="vb"><span class="col"><b>21%</b><i style="height:56%"></i></span><small>65–70</small></span><span class="vb"><span class="col"><b>31%</b><i style="height:82%"></i></span><small>70–75</small></span><span class="vb"><span class="col"><b>23%</b><i style="height:61%"></i></span><small>75–80</small></span><span class="vb"><span class="col"><b>12%</b><i style="height:32%"></i></span><small>80+</small></span></div>
+              <p class="sn">Diameter in mm, every visible fruit measured</p></div></figure>
+          <figure class="cr-slide" aria-label="3 of 4"><img src="img/apple-bins.jpg" alt="" class="dim">
+            <div class="snap"><p class="sl">Colour</p><h4>78% of fruit is at least half red</h4>
+              <div class="cstack" role="img" aria-label="Red skin coverage: 75 to 100% red 46%, 50 to 75% 32%, 25 to 50% 15%, under 25% 7%"><i style="width:46%;background:#b3132f"></i><i style="width:32%;background:#d9573a"></i><i style="width:15%;background:#e9a13b"></i><i style="width:7%;background:#b7c36a"></i></div>
+              <ul class="cleg"><li><span style="background:#b3132f"></span>75–100% red<b>46%</b></li><li><span style="background:#d9573a"></span>50–75%<b>32%</b></li><li><span style="background:#e9a13b"></span>25–50%<b>15%</b></li><li><span style="background:#b7c36a"></span>Under 25%<b>7%</b></li></ul></div></figure>
+          <figure class="cr-slide" aria-label="4 of 4"><img src="img/apple-bins.jpg" alt="" class="dim">
+            <div class="snap"><p class="sl">Defects</p><h4>93% of fruit is clean</h4>
+              <ul class="dlist"><li>Bruising<span><i style="width:100%"></i></span><b>3.1%</b></li><li>Hail marks<span><i style="width:71%"></i></span><b>2.2%</b></li><li>Scab<span><i style="width:45%"></i></span><b>1.4%</b></li><li>Cuts and rot<span><i style="width:29%"></i></span><b>0.9%</b></li></ul>
+              <p class="sn">Flagged bin by bin, so damaged bins are sorted first</p></div></figure>
+          <!-- Add the bin scanning video as another slide:
+          <figure class="cr-slide"><video src="img/bin-scan.mp4" muted loop playsinline autoplay controls></video></figure> -->
+        </div>
+        <span class="badge">02 · In the bin</span>
+        <span class="cr-tag">Example chamber</span>
+        <div class="cr-ctrl"><button type="button" class="cr-btn" data-dir="-1" aria-label="Previous slide">‹</button><span class="cr-dots"></span><button type="button" class="cr-btn" data-dir="1" aria-label="Next slide">›</button></div>
+      </div>
       <div class="pc">
         <span class="tag">Bin Scan</span>
         <h3>Know what's inside every bin in your cold store</h3>
@@ -479,11 +528,6 @@ fieldset.f{border:0;margin:0;padding:0}
           <div><b>6</b><span>Cold stores and collection centres</span></div>
         </div>
         <p class="field-note">In use at cold stores across the Kashmir and Himachal apple belts, India, over the 2025 and 2026 seasons.</p>
-        <a class="report-card" href="bin-scan-sample-report.html">
-          <span class="rc-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9 17v-3M12 17v-6M15 17v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
-          <span class="rc-txt"><b>See a sample Bin Scan report</b><small>Size, colour and defects for one cold-store chamber, bin by bin</small></span>
-          <span class="rc-go" aria-hidden="true">→</span>
-        </a>
       </div>
     </article>
 
@@ -595,6 +639,27 @@ fieldset.f{border:0;margin:0;padding:0}
     </div>
   </div>
 </footer>
+<script>
+(function(){
+  document.querySelectorAll('.carousel').forEach(c=>{
+    const track=c.querySelector('.cr-track'), slides=[...track.querySelectorAll('.cr-slide')], dots=c.querySelector('.cr-dots');
+    let i=0, timer=null;
+    const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    slides.forEach((_,n)=>{ const d=document.createElement('button'); d.type='button'; d.setAttribute('aria-label','Show slide '+(n+1)); d.addEventListener('click',()=>{go(n);stop();}); dots.appendChild(d); });
+    const mark=()=>[...dots.children].forEach((d,n)=>d.setAttribute('aria-current',n===i?'true':'false'));
+    function go(n){ i=(n+slides.length)%slides.length; track.scrollTo({left:i*track.clientWidth}); mark(); }
+    track.addEventListener('scroll',()=>{ const n=Math.round(track.scrollLeft/Math.max(1,track.clientWidth)); if(n!==i){ i=n; mark(); } },{passive:true});
+    c.querySelectorAll('.cr-btn').forEach(b=>b.addEventListener('click',()=>{ go(i+Number(b.dataset.dir)); stop(); }));
+    track.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'){e.preventDefault();go(i+1);stop();} if(e.key==='ArrowLeft'){e.preventDefault();go(i-1);stop();} });
+    function start(){ if(reduce||timer) return; timer=setInterval(()=>go(i+1),4500); }
+    function stop(){ clearInterval(timer); timer=null; }
+    c.addEventListener('mouseenter',stop); c.addEventListener('mouseleave',start);
+    c.addEventListener('focusin',stop); track.addEventListener('touchstart',stop,{passive:true});
+    mark(); start();
+  });
+})();
+</script>
+
 
 <dialog class="contact" id="contact" aria-labelledby="cm-title">
   <div class="cm" id="cm-form-view">
