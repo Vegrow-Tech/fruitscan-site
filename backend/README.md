@@ -12,7 +12,7 @@
    - Execute as: **Me**
    - Who has access: **Anyone**
 6. Click **Deploy**, approve the permission prompt, and copy the **Web app URL** (it ends in `/exec`).
-7. In the site's `index.html`, set `const ENDPOINT='...'` to that URL and push to `main`.
+7. In the site's `index.html`, set `const ENDPOINT='...'` to that URL and push to `main`. (Already set; only needed if you create a new deployment.)
 
 ## Notes
 
