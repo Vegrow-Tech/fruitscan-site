@@ -409,6 +409,9 @@ fieldset.f{border:0;margin:0;padding:0}
 .snap.orch .blk{gap:6px;padding-top:9px}
 .snap.orch .blk+.blk{margin-top:9px}
 @media (max-width:620px){.snap.orch .mcol{height:26px}.snap.orch .farm{max-height:66px}.snap.orch .bh b{font-size:13px}.snap.orch .mb small{font-size:8.5px}.snap.orch .fkey .k3,.snap.orch .fkey span:last-child{display:none}}
+
+.cr-slide.vid>video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:transparent}
+.cr-slide.vid>img.dim{position:absolute;inset:0}
 </style>
 </head>
 <body>
@@ -496,7 +499,7 @@ fieldset.f{border:0;margin:0;padding:0}
     <article class="prod o" id="orchard">
       <div class="pm carousel" aria-roledescription="carousel" aria-label="Orchard Assessment in pictures">
         <div class="cr-track" tabindex="0">
-          <figure class="cr-slide" aria-label="1 of 2"><video src="img/apple-demo.mp4" poster="img/apple-demo-poster.jpg" muted playsinline preload="metadata" data-max="14" aria-label="Live demo: FruitScan detecting and tracking each apple on the tree in a commercial apple orchard"></video><span class="cr-live">Live demo</span></figure>
+          <figure class="cr-slide vid" aria-label="1 of 2"><img src="img/apple-demo-poster.jpg" alt="" class="dim"><video src="img/apple-demo.mp4" poster="img/apple-demo-poster.jpg" muted playsinline preload="metadata" data-max="14" aria-label="Live demo: FruitScan detecting and tracking each apple on the tree in a commercial apple orchard"></video><span class="cr-live">Live demo</span></figure>
           <figure class="cr-slide" aria-label="2 of 2"><img src="img/apple-demo-poster.jpg" alt="" class="dim">
             <div class="snap all orch">
               <div class="sh"><p class="sl" style="color:#4f7f1c">Orchard snapshot</p><p class="sn">Block B · 1.1 ha · 540 trees</p></div>
@@ -543,7 +546,7 @@ fieldset.f{border:0;margin:0;padding:0}
     <article class="prod c flip" id="bins">
       <div class="pm carousel" aria-roledescription="carousel" aria-label="Bin Scan in pictures">
         <div class="cr-track" tabindex="0">
-          <figure class="cr-slide" aria-label="1 of 2"><video src="img/bin-scan.mp4" poster="img/bin-scan-poster.jpg" muted playsinline preload="metadata" aria-label="Bin Scan detecting every apple in a cold-store bin"></video><span class="cr-live">Live bin scan</span></figure>
+          <figure class="cr-slide vid" aria-label="1 of 2"><img src="img/bin-scan-poster.jpg" alt="" class="dim"><video src="img/bin-scan.mp4" poster="img/bin-scan-poster.jpg" muted playsinline preload="metadata" aria-label="Bin Scan detecting every apple in a cold-store bin"></video><span class="cr-live">Live bin scan</span></figure>
           <figure class="cr-slide" aria-label="2 of 2"><img src="img/bin-scan-poster.jpg" alt="" class="dim">
             <div class="snap all">
               <div class="sh"><p class="sl">Chamber snapshot</p><p class="sn">48 bins · 12,480 fruit measured</p></div>
