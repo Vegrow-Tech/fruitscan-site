@@ -361,6 +361,8 @@ fieldset.f{border:0;margin:0;padding:0}
 .dlist span{height:9px;border-radius:5px;background:#eef3ef;overflow:hidden}
 .dlist i{display:block;height:100%;background:#b3261e;border-radius:5px}
 .dlist b{text-align:right}
+.cr-live{position:absolute;left:18px;bottom:66px;display:inline-flex;align-items:center;gap:7px;background:rgba(8,17,13,.72);color:#fff;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:8px 12px;border-radius:999px}
+.cr-live::before{content:"";width:7px;height:7px;border-radius:50%;background:#ff4d4d}
 .cr-tag{position:absolute;right:18px;top:18px;background:rgba(8,17,13,.72);color:#fff;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:8px 12px;border-radius:999px}
 .cr-ctrl{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:rgba(8,17,13,.62);border-radius:999px;padding:5px 6px;backdrop-filter:blur(6px)}
 .cr-btn{width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:20px;line-height:1;cursor:pointer;display:grid;place-items:center}
@@ -486,21 +488,20 @@ fieldset.f{border:0;margin:0;padding:0}
     <article class="prod c flip" id="bins">
       <div class="pm carousel" aria-roledescription="carousel" aria-label="Bin Scan in pictures">
         <div class="cr-track" tabindex="0">
-          <figure class="cr-slide" aria-label="1 of 4"><img src="img/apple-bins.jpg" alt="Wooden bins filled with freshly harvested apples"></figure>
-          <figure class="cr-slide" aria-label="2 of 4"><img src="img/apple-bins.jpg" alt="" class="dim">
+          <figure class="cr-slide" aria-label="1 of 5"><video src="img/bin-scan.mp4" poster="img/bin-scan-poster.jpg" muted playsinline preload="metadata" aria-label="Bin Scan detecting every apple in a cold-store bin"></video><span class="cr-live">Live bin scan</span></figure>
+          <figure class="cr-slide" aria-label="2 of 5"><img src="img/apple-bins.jpg" alt="Wooden bins filled with freshly harvested apples"></figure>
+          <figure class="cr-slide" aria-label="3 of 5"><img src="img/apple-bins.jpg" alt="" class="dim">
             <div class="snap"><p class="sl">Size</p><h4>66% of fruit is 70 mm or larger</h4>
               <div class="vbars" role="img" aria-label="Share of fruit by diameter: under 60 mm 4%, 60 to 65 mm 9%, 65 to 70 mm 21%, 70 to 75 mm 31%, 75 to 80 mm 23%, 80 mm and over 12%"><span class="vb"><span class="col"><b>4%</b><i style="height:11%"></i></span><small>&lt;60</small></span><span class="vb"><span class="col"><b>9%</b><i style="height:24%"></i></span><small>60–65</small></span><span class="vb"><span class="col"><b>21%</b><i style="height:56%"></i></span><small>65–70</small></span><span class="vb"><span class="col"><b>31%</b><i style="height:82%"></i></span><small>70–75</small></span><span class="vb"><span class="col"><b>23%</b><i style="height:61%"></i></span><small>75–80</small></span><span class="vb"><span class="col"><b>12%</b><i style="height:32%"></i></span><small>80+</small></span></div>
               <p class="sn">Diameter in mm, every visible fruit measured</p></div></figure>
-          <figure class="cr-slide" aria-label="3 of 4"><img src="img/apple-bins.jpg" alt="" class="dim">
+          <figure class="cr-slide" aria-label="4 of 5"><img src="img/apple-bins.jpg" alt="" class="dim">
             <div class="snap"><p class="sl">Colour</p><h4>78% of fruit is at least half red</h4>
               <div class="cstack" role="img" aria-label="Red skin coverage: 75 to 100% red 46%, 50 to 75% 32%, 25 to 50% 15%, under 25% 7%"><i style="width:46%;background:#b3132f"></i><i style="width:32%;background:#d9573a"></i><i style="width:15%;background:#e9a13b"></i><i style="width:7%;background:#b7c36a"></i></div>
               <ul class="cleg"><li><span style="background:#b3132f"></span>75–100% red<b>46%</b></li><li><span style="background:#d9573a"></span>50–75%<b>32%</b></li><li><span style="background:#e9a13b"></span>25–50%<b>15%</b></li><li><span style="background:#b7c36a"></span>Under 25%<b>7%</b></li></ul></div></figure>
-          <figure class="cr-slide" aria-label="4 of 4"><img src="img/apple-bins.jpg" alt="" class="dim">
+          <figure class="cr-slide" aria-label="5 of 5"><img src="img/apple-bins.jpg" alt="" class="dim">
             <div class="snap"><p class="sl">Defects</p><h4>93% of fruit is clean</h4>
               <ul class="dlist"><li>Bruising<span><i style="width:100%"></i></span><b>3.1%</b></li><li>Hail marks<span><i style="width:71%"></i></span><b>2.2%</b></li><li>Scab<span><i style="width:45%"></i></span><b>1.4%</b></li><li>Cuts and rot<span><i style="width:29%"></i></span><b>0.9%</b></li></ul>
               <p class="sn">Flagged bin by bin, so damaged bins are sorted first</p></div></figure>
-          <!-- Add the bin scanning video as another slide:
-          <figure class="cr-slide"><video src="img/bin-scan.mp4" muted loop playsinline autoplay controls></video></figure> -->
         </div>
         <span class="badge">02 · In the bin</span>
         <span class="cr-tag">Example chamber</span>
@@ -647,15 +648,20 @@ fieldset.f{border:0;margin:0;padding:0}
     const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
     slides.forEach((_,n)=>{ const d=document.createElement('button'); d.type='button'; d.setAttribute('aria-label','Show slide '+(n+1)); d.addEventListener('click',()=>{go(n);stop();}); dots.appendChild(d); });
     const mark=()=>[...dots.children].forEach((d,n)=>d.setAttribute('aria-current',n===i?'true':'false'));
-    function go(n){ i=(n+slides.length)%slides.length; track.scrollTo({left:i*track.clientWidth}); mark(); }
-    track.addEventListener('scroll',()=>{ const n=Math.round(track.scrollLeft/Math.max(1,track.clientWidth)); if(n!==i){ i=n; mark(); } },{passive:true});
+    const vid=n=>slides[n]&&slides[n].querySelector('video');
+    function sync(){ slides.forEach((_,n)=>{ const v=vid(n); if(!v) return; if(n===i){ v.currentTime=0; const pr=v.play(); if(pr&&pr.catch) pr.catch(()=>{}); } else v.pause(); }); c.querySelector('.cr-tag').hidden=!!vid(i); schedule(); }
+    function go(n){ i=(n+slides.length)%slides.length; track.scrollTo({left:i*track.clientWidth}); mark(); sync(); }
+    track.addEventListener('scroll',()=>{ const n=Math.round(track.scrollLeft/Math.max(1,track.clientWidth)); if(n!==i){ i=n; mark(); sync(); } },{passive:true});
     c.querySelectorAll('.cr-btn').forEach(b=>b.addEventListener('click',()=>{ go(i+Number(b.dataset.dir)); stop(); }));
     track.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'){e.preventDefault();go(i+1);stop();} if(e.key==='ArrowLeft'){e.preventDefault();go(i-1);stop();} });
-    function start(){ if(reduce||timer) return; timer=setInterval(()=>go(i+1),4500); }
-    function stop(){ clearInterval(timer); timer=null; }
-    c.addEventListener('mouseenter',stop); c.addEventListener('mouseleave',start);
+    let auto=!reduce, paused=false;
+    function schedule(){ clearTimeout(timer); timer=null; if(!auto||paused) return; if(vid(i)) return; timer=setTimeout(()=>go(i+1),4500); }
+    slides.forEach((sl,n)=>{ const v=vid(n); if(v) v.addEventListener('ended',()=>{ if(n===i&&auto&&!paused) go(i+1); else if(n===i){ v.currentTime=0; v.play().catch(()=>{}); } }); });
+    function start(){ paused=false; schedule(); }
+    function stop(){ auto=false; clearTimeout(timer); timer=null; }
+    c.addEventListener('mouseenter',()=>{ paused=true; clearTimeout(timer); timer=null; }); c.addEventListener('mouseleave',start);
     c.addEventListener('focusin',stop); track.addEventListener('touchstart',stop,{passive:true});
-    mark(); start();
+    mark(); sync();
   });
 })();
 </script>
