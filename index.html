@@ -416,6 +416,16 @@ fieldset.f{border:0;margin:0;padding:0}
 .cr-slide.vid>img.dim{position:absolute;inset:0}
 
 @media (max-width:620px){#packing .cr-live{display:none}}
+
+.flow{list-style:none;margin:0 0 18px;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;position:relative}
+.flow::before{content:"";position:absolute;left:calc(16.66% - 0px);right:calc(16.66%);top:19px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--orchard),var(--cold),var(--pack))}
+.flow li{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative}
+.fdot{width:40px;height:40px;border-radius:50%;background:var(--bg);border:3px solid var(--c);display:grid;place-items:center;font-family:var(--mono);font-size:12px;color:var(--c)}
+.fl{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--c)}
+.card .was{font-size:14px;color:rgba(255,255,255,.7);text-decoration:line-through;text-decoration-color:rgba(255,255,255,.45)}
+.card .now{font-size:16px;font-weight:600;color:#fff}
+.card{min-height:380px}
+@media (max-width:980px){.flow{display:none}}
 </style>
 </head>
 <body>
@@ -437,7 +447,6 @@ fieldset.f{border:0;margin:0;padding:0}
       <p class="lead">FruitScan uses AI vision to measure size, weight, colour and defects on the tree, in cold storage and on the packing line. You plan, store and pack on measured data, and your buyers get proof.</p>
       <div class="cta-row">
         <a class="btn primary" href="#pilot" data-contact="pilot">Request a pilot</a>
-        <a class="btn ghost" href="https://www.youtube.com/watch?v=ukvQ9xS9u4w" target="_blank" rel="noopener"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z"/></svg>Watch the demo</a>
       </div>
       <div class="chips"><span>Android phone capture</span><span>Reports in minutes</span><span>Apple and pomegranate</span></div>
     </div>
@@ -466,32 +475,16 @@ fieldset.f{border:0;margin:0;padding:0}
 
 <section class="sec" id="solutions">
   <div class="in">
-    <div class="head"><p class="eyebrow">Solutions</p><h2>Built for every step your fruit takes</h2><p class="lead">Start with the checkpoint that costs you most today, or connect all three.</p></div>
+    <div class="head"><p class="eyebrow">Tree to box</p><h2>Quality is decided on the tree, at risk in the bin and judged in the box</h2><p class="lead">FruitScan measures it at all three points. Start with the one that costs you most, or connect them into one quality record.</p></div>
+    <ol class="flow" aria-label="The three checkpoints">
+      <li class="o"><span class="fdot">01</span><span class="fl">On the tree</span></li>
+      <li class="c"><span class="fdot">02</span><span class="fl">In the bin</span></li>
+      <li class="p"><span class="fdot">03</span><span class="fl">In the box</span></li>
+    </ol>
     <div class="aud">
-      <a class="card" href="#orchard"><img src="img/apples-tree-800.webp" alt="Red apples ripening on the tree" decoding="async" loading="lazy"><div class="cc"><small>For growers</small><h3>Orchard Assessment</h3><p>Know your grade mix before harvest and sell on data.</p><span class="go">Explore →</span></div></a>
-      <a class="card" href="#bins"><img src="img/apple-bins-800.webp" alt="Wooden bins filled with freshly harvested apples" decoding="async" loading="lazy"><div class="cc"><small>For cold storage</small><h3>Bin Scan</h3><p>See weight, colour and defects inside every bin.</p><span class="go">Explore →</span></div></a>
-      <a class="card" href="#packing"><img src="img/conveyor-apples-800.webp" alt="Apples moving along a packhouse conveyor" decoding="async" loading="lazy"><div class="cc"><small>For packers</small><h3>Package Monitoring</h3><p>Catch boxes packed outside norms, at the lane.</p><span class="go">Explore →</span></div></a>
-    </div>
-  </div>
-</section>
-
-<section class="sec alt" id="why">
-  <div class="in story">
-    <div>
-      <div class="head"><p class="eyebrow">Why end to end</p><h2>Quality is decided in the orchard, at risk in storage and judged at the box.</h2></div>
-      <nav class="rail" aria-label="Checkpoints">
-        <a class="stop o" href="#orchard"><span class="dot">01</span><b>Tree</b><span>Orchard Assessment</span></a>
-        <a class="stop c" href="#bins"><span class="dot">02</span><b>Bin</b><span>Bin Scan</span></a>
-        <a class="stop p" href="#packing"><span class="dot">03</span><b>Box</b><span>Package Monitoring</span></a>
-      </nav>
-    </div>
-    <div>
-      <div class="losses">
-        <div class="loss o"><span class="w">On the tree</span><div><h3>Sold blind</h3><p>Prices and contracts are negotiated on a buyer's eyeball estimate of the crop.</p></div></div>
-        <div class="loss c"><span class="w">In the bin</span><div><h3>Opened blind</h3><p>Chambers are opened without knowing their weight, colour or defect profile.</p></div></div>
-        <div class="loss p"><span class="w">In the box</span><div><h3>Packed blind</h3><p>Boxes that miss the norms are found by the customer and paid for in discounts.</p></div></div>
-      </div>
-      <p class="sum">FruitScan puts a measurement at each of these points. Each checkpoint works on its own, and together they give you <strong>one continuous quality record</strong> from orchard to dispatch.</p>
+      <a class="card o" href="#orchard"><img src="img/apples-tree-800.webp" alt="Red apples ripening on the tree" decoding="async" loading="lazy"><div class="cc"><small>For growers</small><h3>Orchard Assessment</h3><p class="was">Today: sold on a buyer's eyeball estimate</p><p class="now">Know your grade mix before harvest</p><span class="go">Explore →</span></div></a>
+      <a class="card c" href="#bins"><img src="img/apple-bins-800.webp" alt="Wooden bins filled with freshly harvested apples" decoding="async" loading="lazy"><div class="cc"><small>For cold storage</small><h3>Bin Scan</h3><p class="was">Today: chambers opened blind</p><p class="now">See weight, colour and defects in every bin</p><span class="go">Explore →</span></div></a>
+      <a class="card p" href="#packing"><img src="img/conveyor-apples-800.webp" alt="Apples moving along a packhouse conveyor" decoding="async" loading="lazy"><div class="cc"><small>For packers</small><h3>Package Monitoring</h3><p class="was">Today: bad boxes found by the customer</p><p class="now">Catch them at the lane, before dispatch</p><span class="go">Explore →</span></div></a>
     </div>
   </div>
 </section>
