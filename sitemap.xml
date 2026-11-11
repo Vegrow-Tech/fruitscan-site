@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+  <url>
+    <loc>https://fruitscan.vegrow.in/</loc>
+    <lastmod>2026-11-11</lastmod>
+    <image:image><image:loc>https://fruitscan.vegrow.in/img/og-image.jpg</image:loc></image:image>
+    <video:video>
+      <video:thumbnail_loc>https://fruitscan.vegrow.in/img/packing-demo-poster-800.webp</video:thumbnail_loc>
+      <video:title>FruitScan packing check: right apple, right box</video:title>
+      <video:description>AI outlines each apple by the box it belongs in and flags wrong-box placements on the packing line as they happen.</video:description>
+      <video:content_loc>https://fruitscan.vegrow.in/img/packing-demo-d.mp4</video:content_loc>
+    </video:video>
+    <video:video>
+      <video:thumbnail_loc>https://fruitscan.vegrow.in/img/apple-demo-poster-800.webp</video:thumbnail_loc>
+      <video:title>FruitScan orchard assessment: apples detected on the tree</video:title>
+      <video:description>FruitScan detecting and tracking each apple on the tree in a commercial apple orchard.</video:description>
+      <video:content_loc>https://fruitscan.vegrow.in/img/apple-demo-d.mp4</video:content_loc>
+    </video:video>
+  </url>
+</urlset>
